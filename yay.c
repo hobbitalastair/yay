@@ -378,6 +378,18 @@ size_t render_buf(Buf* buf, size_t v_line, Pointer p, const char* status) {
             disp_x++;
             v_char++;
         }
+        if (c == '\t') {
+            for (int i = 0; i < 4; i++) {
+                addch(' ');
+                disp_x++;
+                if (disp_x >= width) {
+                     disp_x = 0;
+                     disp_y++;
+                     move(disp_y, disp_x);
+                }
+            }
+            v_char++;
+        }
         if (c == '\n') {
             disp_x = 0;
             disp_y++;
@@ -444,7 +456,7 @@ bool view_buf(Buf* buf, char* path) {
         size_t offset = line2offset(buf, p.line, p.column);
         size_t line_len = buf_linelen(buf, p.line);
         int c = getch();
-        if (c >= 32 && c <= 126) {
+        if ((c >= 32 && c <= 126) || c == '\t') {
             buf_sel_delete(buf, &p);
             status = buf_insert(buf, offset, c);
             if (status == ERR_OK) {
